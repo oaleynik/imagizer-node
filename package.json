@@ -1,0 +1,25 @@
+{
+  "name": "imagizer-node",
+  "description": "Common boilerplate for imagizer JavaScript-based functionality.",
+  "version": "1.0.0",
+  "repository": "https://github.com/CloudSpot/imagizer-node",
+  "scripts": {
+    "assert_version": "node assert_version.js",
+    "compile": "mkdir -p dist && uglifyjs ./src/imagizer-node.js -o ./dist/imagizer-node.min.js && cp ./src/imagizer-node.js ./dist/imagizer-node.js",
+    "prepublish": "npm run compile && npm run assert_version",
+    "test": "mocha"
+  },
+  "main": "dist/imagizer-node.js",
+  "dependencies": {
+    "js-base64": "^2.1.9",
+    "md5": "^2.2.1",
+    "crc": "^3.5.0"
+  },
+  "license": "BSD-2-Clause",
+  "devDependencies": {
+    "mocha": "^2.2.5",
+    "phantomjs": "^1.9.17",
+    "sinon": "^7.3.2",
+    "uglify-js": "^3.4.9"
+  }
+}
