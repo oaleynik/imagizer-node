@@ -1,0 +1,54 @@
+extends: 'eslint:recommended'
+plugins:
+  - mocha
+parserOptions:
+  ecmaVersion: 10
+env:
+  es6: true
+  node: true
+rules:
+  indent:
+    - error
+    - 2
+  linebreak-style:
+    - error
+    - unix
+  quotes:
+    - error
+    - single
+  semi:
+    - error
+    - always
+  no-console:
+    - warn
+  max-len:
+    - warn
+    - 140
+  no-multi-spaces:
+    - error
+  comma-dangle:
+    - error
+    - always-multiline
+  newline-before-return:
+    - error
+  no-multiple-empty-lines:
+    - error
+  no-nested-ternary:
+    - error
+  no-trailing-spaces:
+    - error
+  one-var:
+    - error
+    - never
+  padded-blocks:
+    - error
+    - never
+  eqeqeq:
+    - error
+    - smart
+  space-before-function-paren:
+    - error
+    - always
+  object-property-newline:
+    - error
+    - allowMultiplePropertiesPerLine: true
