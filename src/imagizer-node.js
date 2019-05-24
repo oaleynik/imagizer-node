@@ -32,16 +32,11 @@ class ImagizerClient {
   }
 
   _sanitizePath (path) {
-    // Strip leading slash first (we'll re-add after encoding)
     path = path.replace(/^\//, '');
 
     if (/^https?:\/\//.test(path)) {
-      // Use de/encodeURIComponent to ensure *all* characters are handled,
-      // since it's being used as a path
       path = encodeURIComponent(path);
     } else {
-      // Use de/encodeURI if we think the path is just a path,
-      // so it leaves legal characters like '/' and '@' alone
       path = encodeURI(path);
     }
 
