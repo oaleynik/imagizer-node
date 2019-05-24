@@ -1,18 +1,28 @@
 {
-  "name": "imagizer-node",
-  "description": "Common boilerplate for imagizer JavaScript-based functionality.",
+  "name": "@oaleynik/imagizer-node",
   "version": "1.0.0",
-  "repository": "https://github.com/oaleynik/imagizer-node",
-  "scripts": {
-    "test": "mocha"
-  },
+  "description": "Common boilerplate for imagizer JavaScript-based functionality.",
   "main": "src/imagizer-node.js",
-  "dependencies": {},
-  "license": "BSD-2-Clause",
+  "directories": {
+    "test": "test"
+  },
   "devDependencies": {
     "eslint-plugin-mocha": "^5.3.0",
     "mocha": "^6.1.4"
   },
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oaleynik/imagizer-node.git"
+  },
+  "author": "oleg.aleynik@gmail.com",
+  "license": "BSD-2-Clause",
+  "bugs": {
+    "url": "https://github.com/oaleynik/imagizer-node/issues"
+  },
+  "homepage": "https://github.com/oaleynik/imagizer-node#readme",
   "engines": {
     "node": "^10.0.0"
   }
