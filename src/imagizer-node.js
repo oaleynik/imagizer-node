@@ -1,173 +1,86 @@
-(function (global, factory) {
-  if (typeof define === 'function' && define.amd) {
-    define('Imagizer', ['exports', 'md5', 'js-base64', 'crc'], factory);
-  } else if (typeof exports !== 'undefined') {
-    module.exports = factory(exports, require('md5'), require('js-base64').Base64, require('crc'));
-  } else {
-    var mod = {
-      exports: {}
-    };
-    global.ImagizerClient = factory(mod.exports, global.md5, global.Base64, global.crc);
+const VERSION = '1.0.0';
+const DOMAIN_REGEX = /^(?:[a-z\d\-_]{1,62}\.){0,125}(?:[a-z\d](?:-(?=-*[a-z\d])|[a-z]|\d){0,62}\.)[a-z\d]{1,63}$/i;
+
+const DEFAULTS = {
+  domains: [],
+  useHTTPS: true,
+};
+
+class ImagizerClient {
+  constructor (opts = {}) {
+    this.settings = { ...DEFAULTS, ...opts };
+    this.settings.urlPrefix = this.settings.useHTTPS ? 'https://' : 'http://';
+
+    if (!Array.isArray(this.settings.domains)) {
+      this.settings.domains = [this.settings.domains];
+    }
+
+    this.settings.domains.forEach(domain => {
+      if (DOMAIN_REGEX.exec(domain) == null) {
+        throw new Error(
+          'Domains must be passed in as fully-qualified ' +
+          'domain names and should not include a protocol or any path ' +
+          'element, i.e. "example.imagizer.com".');
+      }
+    });
   }
-})(this, function (exports, _md5, _jsBase64, _crc) {
-  var md5 = _md5;
-  var Base64 = _jsBase64.Base64 || _jsBase64;
-  var crc = _crc;
 
-  var VERSION = '1.3.0';
-  var SHARD_STRATEGY_CRC = 'crc';
-  var SHARD_STRATEGY_CYCLE = 'cycle';
-  var DOMAIN_REGEX = /^(?:[a-z\d\-_]{1,62}\.){0,125}(?:[a-z\d](?:\-(?=\-*[a-z\d])|[a-z]|\d){0,62}\.)[a-z\d]{1,63}$/i;
-  var DEFAULTS = {
-    host: null,
-    domains: [],
-    useHTTPS: true,
-    includeLibraryParam: true,
-    shard_strategy: SHARD_STRATEGY_CRC
-  };
+  buildURL (path, params) {
+    path = this._sanitizePath(path);
 
-  var ImagizerClient = (function() {
-    function ImagizerClient(opts) {
-      var key, val;
-
-      this.settings = {};
-      this._shard_next_index = 0;
-
-      for (key in DEFAULTS) {
-        val = DEFAULTS[key];
-        this.settings[key] = val;
-      }
-
-      for (key in opts) {
-        val = opts[key];
-        this.settings[key] = val;
-      }
-
-      if (!Array.isArray(this.settings.domains)) {
-        this.settings.domains = [this.settings.domains];
-      }
-      else {
-        console.warn("Warning: Domain sharding has been deprecated and will be removed in the next major version.");
-      }
-
-      if (!this.settings.host && this.settings.domains.length === 0) {
-        throw new Error('ImagizerClient must be passed valid domain(s)');
-      }
-
-      if (this.settings.shard_strategy !== SHARD_STRATEGY_CRC
-          && this.settings.shard_strategy !== SHARD_STRATEGY_CYCLE) {
-        throw new Error('Shard strategy must be one of ' +
-          SHARD_STRATEGY_CRC + ' or ' + SHARD_STRATEGY_CYCLE);
-      }
-
-      if (this.settings.host) {
-        console.warn("'host' argument is deprecated; use 'domains' instead.");
-        if (this.settings.domains.length == 0)
-          this.settings.domains[0] = this.settings.host;
-      }
-
-      this.settings.domains.forEach(function(domain) {
-        if (DOMAIN_REGEX.exec(domain) == null) {
-          throw new Error(
-            'Domains must be passed in as fully-qualified ' +
-            'domain names and should not include a protocol or any path ' +
-            'element, i.e. "example.imagizer.com".');
-        }
-      });
-
-      if (this.settings.includeLibraryParam) {
-        this.settings.libraryParam = "js-" + VERSION;
-      }
-
-      this.settings.urlPrefix = this.settings.useHTTPS ? 'https://' : 'http://'
+    if (params == null) {
+      params = {};
     }
 
-    ImagizerClient.prototype.buildURL = function(path, params) {
-      path = this._sanitizePath(path);
+    let queryParams = this._buildParams(params);
 
-      if (params == null) {
-        params = {};
-      }
+    return this.settings.urlPrefix + this._getDomain(path) + path + queryParams;
+  }
 
-      var queryParams = this._buildParams(params);
-      if (!!this.settings.secureURLToken) {
-        queryParams = this._signParams(path, queryParams);
-      }
+  _getDomain () {
+    return this.settings.domains[0];
+  }
 
-      return this.settings.urlPrefix + this._getDomain(path) + path + queryParams;
-    };
+  _sanitizePath (path) {
+    // Strip leading slash first (we'll re-add after encoding)
+    path = path.replace(/^\//, '');
 
-    ImagizerClient.prototype._getDomain = function(path) {
-      if (this.settings.shard_strategy === SHARD_STRATEGY_CYCLE) {
-        var domain = this.settings.domains[this._shard_next_index];
-        this._shard_next_index = (this._shard_next_index + 1) % this.settings.domains.length;
-        return domain;
-      }
-      else if (this.settings.shard_strategy === SHARD_STRATEGY_CRC) {
-        return this.settings.domains[crc.crc32(path) % this.settings.domains.length];
-      }
+    if (/^https?:\/\//.test(path)) {
+      // Use de/encodeURIComponent to ensure *all* characters are handled,
+      // since it's being used as a path
+      path = encodeURIComponent(path);
+    } else {
+      // Use de/encodeURI if we think the path is just a path,
+      // so it leaves legal characters like '/' and '@' alone
+      path = encodeURI(path);
     }
 
-    ImagizerClient.prototype._sanitizePath = function(path) {
-      // Strip leading slash first (we'll re-add after encoding)
-      path = path.replace(/^\//, '');
+    return '/' + path;
+  }
 
-      if (/^https?:\/\//.test(path)) {
-        // Use de/encodeURIComponent to ensure *all* characters are handled,
-        // since it's being used as a path
-        path = encodeURIComponent(path);
-      } else {
-        // Use de/encodeURI if we think the path is just a path,
-        // so it leaves legal characters like '/' and '@' alone
-        path = encodeURI(path);
-      }
+  _buildParams (params) {
+    let queryParams = [];
+    let key;
+    let val;
+    let encodedKey;
+    let encodedVal;
 
-      return '/' + path;
-    };
+    for (key in params) {
+      val = params[key];
+      encodedKey = encodeURIComponent(key);
+      encodedVal = encodeURIComponent(val);
 
-    ImagizerClient.prototype._buildParams = function(params) {
-      if (this.settings.libraryParam) {
-        params.ixlib = this.settings.libraryParam
-      }
+      queryParams.push(encodedKey + '=' + encodedVal);
+    }
 
-      var queryParams = [];
-      var key, val, encodedKey, encodedVal;
-      for (key in params) {
-        val = params[key];
-        encodedKey = encodeURIComponent(key);
-        encodedVal;
+    if (queryParams[0]) {
+      queryParams[0] = '?' + queryParams[0];
+    }
 
-        if (key.substr(-2) === '64') {
-          encodedVal = Base64.encodeURI(val);
-        } else {
-          encodedVal = encodeURIComponent(val);
-        }
-        queryParams.push(encodedKey + "=" + encodedVal);
-      }
+    return queryParams.join('&');
+  }
+}
 
-      if (queryParams[0]) {
-        queryParams[0] = "?" + queryParams[0];
-      }
-      return queryParams.join('&');
-    };
+ImagizerClient.VERSION = VERSION;
 
-    ImagizerClient.prototype._signParams = function(path, queryParams) {
-      var signatureBase = this.settings.secureURLToken + path + queryParams;
-      var signature = md5(signatureBase);
-
-      if (queryParams.length > 0) {
-        return queryParams = queryParams + "&s=" + signature;
-      } else {
-        return queryParams = "?s=" + signature;
-      }
-    };
-
-    ImagizerClient.VERSION = VERSION;
-    ImagizerClient.SHARD_STRATEGY_CRC = SHARD_STRATEGY_CRC;
-    ImagizerClient.SHARD_STRATEGY_CYCLE = SHARD_STRATEGY_CYCLE;
-
-    return ImagizerClient;
-  })();
-
-  return ImagizerClient;
-});
+module.exports = ImagizerClient;

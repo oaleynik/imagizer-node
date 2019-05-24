@@ -8,9 +8,8 @@ describe('Imagizer client:', function describeSuite() {
       var client = new ImagizerClient({ domains: 'my-host.imagizer.com' });
       assert.equal(client.settings.domains.length, 1);
       assert.equal("my-host.imagizer.com", client.settings.domains[0]);
-      assert.equal(null, client.settings.secureURLToken);
+      assert.equal(void 0, client.settings.secureURLToken);
       assert.equal(true, client.settings.useHTTPS);
-      assert.equal(ImagizerClient.SHARD_STRATEGY_CRC, client.settings.shard_strategy);
     });
 
     it('initializes with a token', function testSpec() {
@@ -54,27 +53,7 @@ describe('Imagizer client:', function describeSuite() {
       stub.restore();
     });
 
-    it('errors with invalid shard strategy', function testSpec() {
-      var deprecation_warning = "Warning: Domain sharding has been deprecated and will be removed in the next major version.";
-      var stub = sinon.stub(console, 'warn').callsFake(function(warning) {
-        assert.equal(warning, deprecation_warning);
-      });
-      assert.throws(function() {
-        new ImagizerClient({
-          domains: ['my-host1.imagizer.com', 'my-host2.imagizer.com'],
-          secureURLToken: 'MYT0KEN',
-          shard_strategy: 'invalid',
-          useHTTPS: false
-        })
-      }, Error);
-      stub.restore();
-    });
-
     it('errors with invalid domain - appended slash', function testSpec() {
-      var deprecation_warning = "Warning: Domain sharding has been deprecated and will be removed in the next major version.";
-      var stub = sinon.stub(console, 'warn').callsFake(function(warning) {
-        assert.equal(warning, deprecation_warning);
-      });
       assert.throws(function() {
         new ImagizerClient({
           domains: ['my-host1.imagizer.com/'],
@@ -297,20 +276,6 @@ describe('Imagizer client:', function describeSuite() {
       assert.equal(expectation, result);
     });
 
-    it('includes an `ixlib` param if the `libraryParam` setting is truthy', function testSpec() {
-      var params = {
-              w: 400
-            },
-          expectation = '?w=400&ixlib=test',
-          result;
-
-      client.settings.libraryParam = 'test';
-
-      result = client._buildParams(params);
-
-      assert.equal(expectation, result);
-    });
-
     it('url-encodes parameter keys properly', function testSpec() {
       var params = {
               'w$': 400
@@ -330,131 +295,5 @@ describe('Imagizer client:', function describeSuite() {
 
       assert.equal(expectation, result);
     });
-
-    it('base64-encodes parameter values whose keys end in `64`', function testSpec() {
-      var params = {
-              txt64: 'lorem ipsum'
-            },
-          expectation = '?txt64=bG9yZW0gaXBzdW0',
-          result = client._buildParams(params);
-
-      assert.equal(expectation, result);
-    });
   });
-
-  describe('Calling _signParams()', function describeSuite() {
-    var client,
-        path = 'images/1.png';
-
-    beforeEach(function setupClient() {
-      client = new ImagizerClient({
-        domains: 'testing.imagizer.com',
-        secureURLToken: 'MYT0KEN',
-        includeLibraryParam: false
-      });
-    });
-
-    it('returns a query string containing only a proper signature parameter, if no other query parameters are provided', function testSpec() {
-      var expectation = '?s=6d82410f89cc6d80a6aa9888dcf85825',
-          result = client._signParams(path, '');
-
-      assert.equal(expectation, result);
-    });
-
-    it('returns a query string with a proper signature parameter appended, if other query parameters are provided', function testSpec() {
-      var expectation = '?w=400&s=990916ef8cc640c58d909833e47f6c31',
-          result = client._signParams(path, '?w=400');
-
-      assert.equal(expectation, result);
-    });
-  });
-
-  describe('Sharding', function describeSuite() {
-    describe('CRC', function describeSuite() {
-      it('path resolves to same domain', function testSpec() {
-        var deprecation_warning = "Warning: Domain sharding has been deprecated and will be removed in the next major version.";
-        var stub = sinon.stub(console, 'warn').callsFake(function(warning) {
-          assert.equal(warning, deprecation_warning);
-        });
-
-        var domains = ['my-host1.imagizer.com', 'my-host2.imagizer.com'];
-        var client = new ImagizerClient({
-          domains: domains,
-          shard_strategy: ImagizerClient.SHARD_STRATEGY_CRC
-        });
-        assert.ok(client.buildURL('/users/1.png').match(domains[0]));
-        assert.ok(client.buildURL('/users/2.png').match(domains[0]));
-        assert.ok(client.buildURL('/users/a.png').match(domains[1]));
-        assert.ok(client.buildURL('/users/1.png').match(domains[0]));
-        assert.ok(client.buildURL('/users/a.png').match(domains[1]));
-        assert.ok(client.buildURL('/users/2.png').match(domains[0]));
-        assert.ok(client.buildURL('/users/b.png').match(domains[1]));
-        assert.ok(client.buildURL('/users/a.png').match(domains[1]));
-        stub.restore();
-      });
-
-      it('single domain sharding', function testSpec() {
-        var domain = 'my-host1.imagizer.com';
-        var client = new ImagizerClient({
-          domains: domain,
-          shard_strategy: ImagizerClient.SHARD_STRATEGY_CRC
-        });
-        assert.ok(client.buildURL('/users/1.png').match(domain));
-        assert.ok(client.buildURL('/users/2.png').match(domain));
-        assert.ok(client.buildURL('/users/a.png').match(domain));
-        assert.ok(client.buildURL('/users/1.png').match(domain));
-        assert.ok(client.buildURL('/users/a.png').match(domain));
-        assert.ok(client.buildURL('/users/2.png').match(domain));
-        assert.ok(client.buildURL('/users/b.png').match(domain));
-        assert.ok(client.buildURL('/users/a.png').match(domain));
-      });
-    });
-
-    describe('Cyclic', function describeSuite() {
-      it('domains cycle', function testSpec() {
-        var deprecation_warning = "Warning: Domain sharding has been deprecated and will be removed in the next major version.";
-        var stub = sinon.stub(console, 'warn').callsFake(function(warning) {
-          assert.equal(warning, deprecation_warning);
-        });
-
-        var domains = ['my-host1.imagizer.com', 'my-host2.imagizer.com', 'my-host3.imagizer.com'];
-        var client = new ImagizerClient({
-          domains: domains,
-          shard_strategy: ImagizerClient.SHARD_STRATEGY_CYCLE
-        });
-        assert.ok(client.buildURL('/users/1.png').match(domains[0]));
-        assert.ok(client.buildURL('/users/2.png').match(domains[1]));
-        assert.ok(client.buildURL('/users/a.png').match(domains[2]));
-        assert.ok(client.buildURL('/users/1.png').match(domains[0]));
-        assert.ok(client.buildURL('/users/a.png').match(domains[1]));
-        assert.ok(client.buildURL('/users/2.png').match(domains[2]));
-        assert.ok(client.buildURL('/users/b.png').match(domains[0]));
-        assert.ok(client.buildURL('/users/a.png').match(domains[1]));
-        stub.restore();
-      });
-
-      it('single domain sharding', function testSpec() {
-        var deprecation_warning = "Warning: Domain sharding has been deprecated and will be removed in the next major version.";
-        var stub = sinon.stub(console, 'warn').callsFake(function(warning) {
-          assert.equal(warning, deprecation_warning);
-        });
-        var domain = 'my-host1.imagizer.com';
-        var client = new ImagizerClient({
-          domains: domain,
-          shard_strategy: ImagizerClient.SHARD_STRATEGY_CYCLE
-        });
-        assert.ok(client.buildURL('/users/1.png').match(domain));
-        assert.ok(client.buildURL('/users/2.png').match(domain));
-        assert.ok(client.buildURL('/users/a.png').match(domain));
-        assert.ok(client.buildURL('/users/1.png').match(domain));
-        assert.ok(client.buildURL('/users/a.png').match(domain));
-        assert.ok(client.buildURL('/users/2.png').match(domain));
-        assert.ok(client.buildURL('/users/b.png').match(domain));
-        assert.ok(client.buildURL('/users/a.png').match(domain));
-        stub.restore();
-      });
-
-    });
-  });
-
 });
