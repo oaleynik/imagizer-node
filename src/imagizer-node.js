@@ -52,7 +52,12 @@ class ImagizerClient {
     for (key in params) {
       val = params[key];
       encodedKey = encodeURIComponent(key);
-      encodedVal = encodeURIComponent(val);
+
+      if (key === 'layers') {
+        encodedVal = encodeURIComponent(JSON.stringify(val));
+      } else {
+        encodedVal = encodeURIComponent(val);
+      }
 
       queryParams.push(encodedKey + '=' + encodedVal);
     }

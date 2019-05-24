@@ -248,5 +248,34 @@ describe('Imagizer client:', function describeSuite() {
 
       assert.equal(expectation, result);
     });
+
+    it('url-encodes `layers` parameter properly', function testSpec() {
+      var params = {
+        layers: [
+          {
+            url: '/image-trans.png',
+            pos: 'top|left',
+            alpha: 75,
+            angle: 45,
+            offset: 15,
+            scale: 30
+          },
+          {
+            url: '/image-trans.png',
+            pos: 'bottom|right',
+            alpha: 100,
+            angle: 250,
+            offset: 35,
+            scale: 75,
+            upscale: false
+          }
+        ],
+      };
+
+      var expectation = '?layers=%5B%7B%22url%22%3A%22%2Fimage-trans.png%22%2C%22pos%22%3A%22top%7Cleft%22%2C%22alpha%22%3A75%2C%22angle%22%3A45%2C%22offset%22%3A15%2C%22scale%22%3A30%7D%2C%7B%22url%22%3A%22%2Fimage-trans.png%22%2C%22pos%22%3A%22bottom%7Cright%22%2C%22alpha%22%3A100%2C%22angle%22%3A250%2C%22offset%22%3A35%2C%22scale%22%3A75%2C%22upscale%22%3Afalse%7D%5D';
+      var result = client._buildParams(params);
+
+      assert.equal(expectation, result);
+    });
   });
 });
