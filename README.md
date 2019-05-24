@@ -8,7 +8,7 @@ imagizer-node is an npm package that provides the common boilerplate for [Imagiz
 imagizer-node can be installed as either via npm:
 
 ```
-$ npm install --save imagizer-node
+$ npm install --save @oaleynik/imagizer-node
 ```
 
 
