@@ -3,13 +3,13 @@ const DOMAIN_REGEX = /^(?:[a-z\d\-_]{1,62}\.){0,125}(?:[a-z\d](?:-(?=-*[a-z\d])|
 
 const DEFAULTS = {
   imagizerHost: 'examples.cloud.imagizer.com',
-  useHTTPS: true,
+  useHttps: true,
 };
 
 class ImagizerClient {
   constructor (opts = {}) {
     this.settings = { ...DEFAULTS, ...opts };
-    this.settings.urlPrefix = this.settings.useHTTPS ? 'https://' : 'http://';
+    this.settings.urlPrefix = this.settings.useHttps ? 'https://' : 'http://';
 
     if (DOMAIN_REGEX.exec(this.settings.imagizerHost) == null) {
       throw new Error(
