@@ -14,14 +14,10 @@ $ npm install --save imagizer-node
 
 ## Usage
 
-Depending on your module system, using imagizer-node is done a few different ways. The most common entry point will be the `Client` class. Whenever you provide data to imagizer-node, make sure it is not already URL-encoded, as the library handles proper encoding internally.
-
-### CommonJS
-
 ``` javascript
-var ImagizerClient = require('imagizer-node');
+const ImagizerClient = require('imagizer-node');
 
-var client = new ImagizerClient({
+const client = new ImagizerClient({
   // Specify your Imagizer source endpoint
   imagizerHost: 'examples.cloud.imagizer.com',
 
@@ -42,30 +38,14 @@ var client = new ImagizerClient({
   // (webp, jpg, png)
   // https://docs.imagizer.com/api_reference/#auto
   format: 'auto',
-  domains: 'my-source.imagizer.com',
-  secureURLToken: '<SECURE TOKEN>',
 });
 
-var url = client.buildURL('/path/to/image.png', {
+const url = client.buildURL('/path/to/image.png', {
   w: 400,
   h: 300
 });
 
 console.log(url); // => "https://my-social-network.imagizer.com/users/1.png?w=400&h=300&s=…"
-```
-
-### ES6 Modules
-
-``` javascript
-import ImagizerClient from 'imagizer-node'
-
-let client = new ImagizerClient({
-  domains: 'my-source.imagizer.com',
-  secureURLToken: '<SECURE TOKEN>',
-});
-
-let url = client.buildURL('/path/to/image.png', { w: 400, h: 300 });
-console.log(url); // => 'https://my-social-network.imagizer.com/users/1.png?w=400&h=300&s=…'
 ```
 
 
