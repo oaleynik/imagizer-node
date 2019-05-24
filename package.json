@@ -9,7 +9,7 @@
     "prepublish": "npm run compile && npm run assert_version",
     "test": "mocha"
   },
-  "main": "dist/imagizer-node.js",
+  "main": "src/imagizer-node.js",
   "dependencies": {
     "js-base64": "^2.1.9",
     "md5": "^2.2.1",
