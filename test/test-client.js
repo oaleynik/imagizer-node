@@ -6,16 +6,16 @@ describe('Imagizer client:', function describeSuite() {
     it('initializes with correct defaults', function testSpec() {
       var client = new ImagizerClient({ imagizerHost: 'my-host.imagizer.com' });
       assert.equal("my-host.imagizer.com", client.settings.imagizerHost);
-      assert.equal(true, client.settings.useHTTPS);
+      assert.equal(true, client.settings.useHttps);
     });
 
     it('initializes in insecure mode', function testSpec() {
       var client = new ImagizerClient({
         imagizerHost: 'my-host.imagizer.com',
-        useHTTPS: false
+        useHttps: false
       });
       assert.equal("my-host.imagizer.com", client.settings.imagizerHost);
-      assert.equal(false, client.settings.useHTTPS);
+      assert.equal(false, client.settings.useHttps);
     });
 
     it('errors with invalid domain - appended slash', function testSpec() {
