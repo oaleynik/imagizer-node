@@ -1,91 +1,45 @@
 var assert = require('assert');
 var ImagizerClient = require('../src/imagizer-node');
-var sinon = require('sinon');
 
 describe('Imagizer client:', function describeSuite() {
   describe('The constructor', function describeSuite() {
     it('initializes with correct defaults', function testSpec() {
-      var client = new ImagizerClient({ domains: 'my-host.imagizer.com' });
-      assert.equal(client.settings.domains.length, 1);
-      assert.equal("my-host.imagizer.com", client.settings.domains[0]);
-      assert.equal(void 0, client.settings.secureURLToken);
-      assert.equal(true, client.settings.useHTTPS);
-    });
-
-    it('initializes with a token', function testSpec() {
-      var client = new ImagizerClient({
-        domains: 'my-host.imagizer.com',
-        secureURLToken: 'MYT0KEN'
-      });
-      assert.equal(client.settings.domains.length, 1);
-      assert.equal("my-host.imagizer.com", client.settings.domains[0]);
-      assert.equal("MYT0KEN", client.settings.secureURLToken);
+      var client = new ImagizerClient({ imagizerHost: 'my-host.imagizer.com' });
+      assert.equal("my-host.imagizer.com", client.settings.imagizerHost);
       assert.equal(true, client.settings.useHTTPS);
     });
 
     it('initializes in insecure mode', function testSpec() {
       var client = new ImagizerClient({
-        domains: 'my-host.imagizer.com',
-        secureURLToken: 'MYT0KEN',
+        imagizerHost: 'my-host.imagizer.com',
         useHTTPS: false
       });
-      assert.equal(client.settings.domains.length, 1);
-      assert.equal("my-host.imagizer.com", client.settings.domains[0]);
-      assert.equal("MYT0KEN", client.settings.secureURLToken);
+      assert.equal("my-host.imagizer.com", client.settings.imagizerHost);
       assert.equal(false, client.settings.useHTTPS);
-    });
-
-    it('initializes with domains list', function testSpec() {
-      var deprecation_warning = "Warning: Domain sharding has been deprecated and will be removed in the next major version.";
-      stub = sinon.stub(console, 'warn').callsFake(function(warning) {
-        assert.equal(warning, deprecation_warning);
-      });
-      var client = new ImagizerClient({
-        domains: ['my-host1.imagizer.com', 'my-host2.imagizer.com'],
-        secureURLToken: 'MYT0KEN',
-        useHTTPS: false
-      });
-      assert.equal(client.settings.domains.length, 2);
-      assert.equal("my-host1.imagizer.com", client.settings.domains[0]);
-      assert.equal("my-host2.imagizer.com", client.settings.domains[1]);
-      assert.equal("MYT0KEN", client.settings.secureURLToken);
-      assert.equal(false, client.settings.useHTTPS);
-      stub.restore();
     });
 
     it('errors with invalid domain - appended slash', function testSpec() {
       assert.throws(function() {
         new ImagizerClient({
-          domains: ['my-host1.imagizer.com/'],
+          imagizerHost: 'my-host1.imagizer.com/',
         })
       }, Error);
-      stub.restore();
     });
 
     it('errors with invalid domain - prepended scheme ', function testSpec() {
-      var deprecation_warning = "Warning: Domain sharding has been deprecated and will be removed in the next major version.";
-      var stub = sinon.stub(console, 'warn').callsFake(function(warning) {
-        assert.equal(warning, deprecation_warning);
-      });
       assert.throws(function() {
         new ImagizerClient({
-          domains: ['https://my-host1.imagizer.com'],
+          imagizerHost: 'https://my-host1.imagizer.com',
         })
       }, Error);
-      stub.restore();
     });
 
     it('errors with invalid domain - appended dash ', function testSpec() {
-      var deprecation_warning = "Warning: Domain sharding has been deprecated and will be removed in the next major version.";
-      var stub = sinon.stub(console, 'warn').callsFake(function(warning) {
-        assert.equal(warning, deprecation_warning);
-      });
       assert.throws(function() {
         new ImagizerClient({
-          domains: ['my-host1.imagizer.com-'],
+          imagizerHost: 'my-host1.imagizer.com-',
         })
       }, Error);
-      stub.restore();
     });
   });
 
@@ -94,7 +48,7 @@ describe('Imagizer client:', function describeSuite() {
 
     beforeEach(function setupClient() {
       client = new ImagizerClient({
-        domains: 'testing.imagizer.com'
+        imagizerHost: 'testing.imagizer.com'
       });
     });
 
@@ -242,8 +196,7 @@ describe('Imagizer client:', function describeSuite() {
 
     beforeEach(function setupClient() {
       client = new ImagizerClient({
-        domains: 'testing.imagizer.com',
-        includeLibraryParam: false
+        imagizerHost: 'testing.imagizer.com'
       });
     });
 

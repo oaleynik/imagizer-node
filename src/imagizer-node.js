@@ -2,7 +2,7 @@ const VERSION = '1.0.0';
 const DOMAIN_REGEX = /^(?:[a-z\d\-_]{1,62}\.){0,125}(?:[a-z\d](?:-(?=-*[a-z\d])|[a-z]|\d){0,62}\.)[a-z\d]{1,63}$/i;
 
 const DEFAULTS = {
-  domains: [],
+  imagizerHost: 'examples.cloud.imagizer.com',
   useHTTPS: true,
 };
 
@@ -11,18 +11,12 @@ class ImagizerClient {
     this.settings = { ...DEFAULTS, ...opts };
     this.settings.urlPrefix = this.settings.useHTTPS ? 'https://' : 'http://';
 
-    if (!Array.isArray(this.settings.domains)) {
-      this.settings.domains = [this.settings.domains];
+    if (DOMAIN_REGEX.exec(this.settings.imagizerHost) == null) {
+      throw new Error(
+        'Domains must be passed in as fully-qualified ' +
+        'domain names and should not include a protocol or any path ' +
+        'element, i.e. "example.imagizer.com".');
     }
-
-    this.settings.domains.forEach(domain => {
-      if (DOMAIN_REGEX.exec(domain) == null) {
-        throw new Error(
-          'Domains must be passed in as fully-qualified ' +
-          'domain names and should not include a protocol or any path ' +
-          'element, i.e. "example.imagizer.com".');
-      }
-    });
   }
 
   buildURL (path, params) {
@@ -34,11 +28,7 @@ class ImagizerClient {
 
     let queryParams = this._buildParams(params);
 
-    return this.settings.urlPrefix + this._getDomain(path) + path + queryParams;
-  }
-
-  _getDomain () {
-    return this.settings.domains[0];
+    return this.settings.urlPrefix + this.settings.imagizerHost + path + queryParams;
   }
 
   _sanitizePath (path) {
