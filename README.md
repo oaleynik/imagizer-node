@@ -23,21 +23,6 @@ const client = new ImagizerClient({
 
   // Optionally, use https for secured websites
   useHttps: true,
-
-  // Optionally, enable Auto device pixel ratio setting.
-  // Device pixel ratio will now be detected
-  // and automatically applied to image urls
-  // https://docs.imagizer.com/api_reference/#dpr
-  autoDpr: true,
-
-  // Optionally, compress our images by setting the global quality
-  // https://docs.imagizer.com/api_reference/#quality
-  quality: 60,
-
-  // Optionally, use best format that's supported by the browser
-  // (webp, jpg, png)
-  // https://docs.imagizer.com/api_reference/#auto
-  format: 'auto',
 });
 
 const url = client.buildURL('/path/to/image.png', {
