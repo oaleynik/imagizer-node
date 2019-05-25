@@ -1,3 +1,5 @@
+const Base64 = require('js-base64').Base64;
+
 const DOMAIN_REGEX = /^(?:[a-z\d\-_]{1,62}\.){0,125}(?:[a-z\d](?:-(?=-*[a-z\d])|[a-z]|\d){0,62}\.)[a-z\d]{1,63}$/i;
 
 const DEFAULTS = {
@@ -53,8 +55,12 @@ class ImagizerClient {
       val = params[key];
       encodedKey = encodeURIComponent(key);
 
-      if (key === 'layers') {
-        encodedVal = encodeURIComponent(JSON.stringify(val));
+      if (key === 'layers' || key === 'layers64') {
+        val = JSON.stringify(val);
+      }
+
+      if (key.substr(-2) === '64') {
+        encodedVal = Base64.encodeURI(val);
       } else {
         encodedVal = encodeURIComponent(val);
       }

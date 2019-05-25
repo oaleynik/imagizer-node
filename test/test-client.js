@@ -277,5 +277,33 @@ describe('Imagizer client:', function describeSuite() {
 
       assert.equal(expectation, result);
     });
+
+    it('base64-encodes parameter properly with "64" postfix', function testSpec() {
+      var params = {
+        layers64: [
+          {
+            url: '/ishack.pro-east/images/img902/cv7npf.jpg',
+            scale: 85,
+          },
+          {
+            url: '/ishack.pro-east/images/img902/cv7npf.jpg',
+            scale: 70,
+          },
+          {
+            url: '/ishack.pro-east/images/img902/cv7npf.jpg',
+            scale: 55,
+          },
+          {
+            url: '/ishack.pro-east/images/img902/cv7npf.jpg',
+            scale: 40,
+          }
+        ],
+      };
+
+      var expectation = '?layers64=W3sidXJsIjoiL2lzaGFjay5wcm8tZWFzdC9pbWFnZXMvaW1nOTAyL2N2N25wZi5qcGciLCJzY2FsZSI6ODV9LHsidXJsIjoiL2lzaGFjay5wcm8tZWFzdC9pbWFnZXMvaW1nOTAyL2N2N25wZi5qcGciLCJzY2FsZSI6NzB9LHsidXJsIjoiL2lzaGFjay5wcm8tZWFzdC9pbWFnZXMvaW1nOTAyL2N2N25wZi5qcGciLCJzY2FsZSI6NTV9LHsidXJsIjoiL2lzaGFjay5wcm8tZWFzdC9pbWFnZXMvaW1nOTAyL2N2N25wZi5qcGciLCJzY2FsZSI6NDB9XQ';
+      var result = client._buildParams(params);
+
+      assert.equal(expectation, result);
+    });
   });
 });

@@ -25,5 +25,8 @@
   "homepage": "https://github.com/oaleynik/imagizer-node#readme",
   "engines": {
     "node": "^10.0.0"
+  },
+  "dependencies": {
+    "js-base64": "^2.5.1"
   }
 }
