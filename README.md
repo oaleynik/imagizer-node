@@ -15,7 +15,7 @@ $ npm install --save @oaleynik/imagizer-node
 ## Usage
 
 ``` javascript
-const ImagizerClient = require('imagizer-node');
+const ImagizerClient = require('@oaleynik/imagizer-node');
 
 const client = new ImagizerClient({
   // Specify your Imagizer source endpoint
