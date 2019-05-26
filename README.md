@@ -8,14 +8,14 @@ imagizer-node is an npm package that provides the common boilerplate for [Imagiz
 imagizer-node can be installed as either via npm:
 
 ```
-$ npm install --save @oaleynik/imagizer-node
+$ npm install --save imagizer-node
 ```
 
 
 ## Usage
 
 ``` javascript
-const ImagizerClient = require('@oaleynik/imagizer-node');
+const ImagizerClient = require('imagizer-node');
 
 const client = new ImagizerClient({
   // Specify your Imagizer source endpoint
