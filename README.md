@@ -25,14 +25,26 @@ const client = new ImagizerClient({
   useHttps: true,
 });
 
+let returnRelativeURL = false;
+
 const url = client.buildURL('/path/to/image.png', {
   w: 400,
   h: 300
-});
+}, returnRelativeURL); // returnRelativeURL argument is `false` by default
 
 console.log(url); // => "https://my-social-network.imagizer.com/users/1.png?w=400&h=300&s=…"
-```
 
+returnRelativeURL = true;
+
+const relativeURL = client.buildURL('/path/to/image.png', {
+  w: 400,
+  h: 300
+}, returnRelativeURL);
+
+console.log(relativeURL); // => "/users/1.png?w=400&h=300&s=…"
+
+// ^^^ Useful for layers and watermarks. Also makes base64 encoded layers shorter
+```
 
 ## Testing
 

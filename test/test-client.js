@@ -306,4 +306,38 @@ describe('Imagizer client:', function describeSuite() {
       assert.equal(expectation, result);
     });
   });
+
+  describe('Calling buildURL()', function describeSuite() {
+    var client;
+
+    beforeEach(function setupClient() {
+      client = new ImagizerClient({
+        imagizerHost: 'testing.imagizer.com'
+      });
+    });
+
+    it('returns relative URL', function testSpec() {
+      var params = {
+        w: 600,
+        crop: 'fit',
+      };
+
+      var result = client.buildURL('/path/to/example.jpg', params, true);
+      var expectation = '/path/to/example.jpg?w=600&crop=fit';
+
+      assert.equal(expectation, result);
+    });
+
+    it('returns full URL', function testSpec() {
+      var params = {
+        w: 600,
+        crop: 'fit',
+      };
+
+      var result = client.buildURL('/path/to/example.jpg', params);
+      var expectation = 'https://testing.imagizer.com/path/to/example.jpg?w=600&crop=fit';
+
+      assert.equal(expectation, result);
+    });
+  });
 });

@@ -20,16 +20,17 @@ class ImagizerClient {
     }
   }
 
-  buildURL (path, params) {
+  buildURL (path, params, returnRelativeURL = false) {
     path = this._sanitizePath(path);
 
-    if (params == null) {
-      params = {};
-    }
+    if (params == null) params = {};
 
     let queryParams = this._buildParams(params);
+    let relativeURL = path + queryParams;
 
-    return this.settings.urlPrefix + this.settings.imagizerHost + path + queryParams;
+    if (returnRelativeURL) return relativeURL;
+
+    return this.settings.urlPrefix + this.settings.imagizerHost + relativeURL;
   }
 
   _sanitizePath (path) {
