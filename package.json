@@ -1,6 +1,6 @@
 {
   "name": "imagizer-node",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Common boilerplate for imagizer JavaScript-based functionality.",
   "main": "src/imagizer-node.js",
   "directories": {
