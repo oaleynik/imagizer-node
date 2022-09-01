@@ -61,7 +61,7 @@ class ImagizerClient {
       }
 
       if (key.substr(-2) === '64') {
-        encodedVal = Base64.encodeURI(val);
+        encodedVal = Base64.encode(val, true);
       } else {
         encodedVal = encodeURIComponent(val);
       }
