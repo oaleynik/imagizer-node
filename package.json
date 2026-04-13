@@ -1,32 +1,51 @@
 {
   "name": "imagizer-node",
-  "version": "1.2.1",
-  "description": "Common boilerplate for imagizer JavaScript-based functionality.",
-  "main": "src/imagizer-node.js",
-  "directories": {
-    "test": "test"
+  "version": "2.0.0",
+  "description": "ESM Imagizer URL builder for server-side JavaScript.",
+  "homepage": "https://github.com/oaleynik/imagizer-node#readme",
+  "bugs": {
+    "url": "https://github.com/oaleynik/imagizer-node/issues"
   },
-  "devDependencies": {
-    "eslint-plugin-mocha": "^5.3.0",
-    "mocha": "^10.2.0"
-  },
-  "scripts": {
-    "test": "mocha"
-  },
+  "license": "MIT",
+  "author": "oleg.aleynik@gmail.com",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/oaleynik/imagizer-node.git"
   },
-  "author": "oleg.aleynik@gmail.com",
-  "license": "BSD-2-Clause",
-  "bugs": {
-    "url": "https://github.com/oaleynik/imagizer-node/issues"
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/imagizer-node.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/imagizer-node.js"
+    }
   },
-  "homepage": "https://github.com/oaleynik/imagizer-node#readme",
+  "scripts": {
+    "build": "vite build && tsc -p tsconfig.json",
+    "format": "oxfmt package.json README.md AGENTS.md src test tsconfig.json vite.config.ts",
+    "format:check": "oxfmt --check package.json README.md AGENTS.md src test tsconfig.json vite.config.ts",
+    "lint": "oxlint --import-plugin --node-plugin --vitest-plugin src test vite.config.ts",
+    "lint:fix": "oxlint --fix --import-plugin --node-plugin --vitest-plugin src test vite.config.ts",
+    "pack:check": "pnpm run build && npm pack --dry-run",
+    "publish:npm": "pnpm run test && pnpm run lint && pnpm run format:check && pnpm run build && pnpm publish",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "devDependencies": {
+    "@types/node": "^25.6.0",
+    "oxfmt": "^0.45.0",
+    "oxlint": "^1.60.0",
+    "typescript": "^6.0.2",
+    "vite": "^8.0.8",
+    "vitest": "^4.1.4"
+  },
   "engines": {
-    "node": "^10.0.0"
+    "node": ">=20.19.0"
   },
-  "dependencies": {
-    "js-base64": "^3.7.2"
-  }
+  "packageManager": "pnpm@10.28.2"
 }
